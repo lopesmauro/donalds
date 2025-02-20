@@ -1,6 +1,7 @@
 import { getRestaurantBySlug } from "@/app/data/get-restaurant-by-slug"
 import { notFound } from "next/navigation"
 import RestaurantHeader from "./components/Header"
+import RestaurantCategories from "./components/Categories"
 
 interface RestaurantMenuPageProps {
     params: Promise<{slug: string}> 
@@ -27,6 +28,7 @@ const RestaurantMenuPage = async ({params, searchParams} : RestaurantMenuPagePro
     return(
         <div>
             <RestaurantHeader restaurant={restaurant} />
+            <RestaurantCategories restaurant={restaurant}/>
         </div> 
     )
 }
