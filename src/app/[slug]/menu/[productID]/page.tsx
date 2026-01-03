@@ -16,6 +16,7 @@ const ProductPage = async ({params} : ProductPageProps) => {
         <>
             <Header product={product} />
             <h1>{slug} {productID}</h1>
+            <h1>{product.name}</h1>
         </>  
     )
 }
