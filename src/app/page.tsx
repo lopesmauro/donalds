@@ -1,8 +1,17 @@
-export default function Home() {
-  return (
-    <div className="">
-      <h1>Página raiz</h1>
-    </div>
-  )
+import { redirect } from "next/navigation"
+import { db } from "@/lib/prisma"
+
+export default async function Home() {
+  const restaurant = await db.restaurant.findFirst({
+    orderBy: {
+      createdAt: "asc",
+    },
+  })
+
+  if (!restaurant) {
+    redirect("/admin")
+  }
+
+  redirect(`/${restaurant.slug}`)
 }
  

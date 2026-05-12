@@ -9,7 +9,7 @@ interface RestaurantMenuPageProps {
 }
 
 const isConsumptionMethodValid = (method: string) => {
-    return ["DINE_IN", "TAKE_AWAY"].includes(method)
+    return ["DINE_IN", "TAKEAWAY"].includes(method)
 }
 
 const RestaurantMenuPage = async ({params, searchParams} : RestaurantMenuPageProps) => {
@@ -26,10 +26,10 @@ const RestaurantMenuPage = async ({params, searchParams} : RestaurantMenuPagePro
     }
 
     return(
-        <div>
+        <main className="min-h-screen bg-muted/40 pb-8">
             <RestaurantHeader restaurant={restaurant} />
             <RestaurantCategories restaurant={restaurant}/>
-        </div> 
+        </main> 
     )
 }
 

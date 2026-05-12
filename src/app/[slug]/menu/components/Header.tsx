@@ -2,9 +2,10 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react"
+import { ChevronLeftIcon } from "lucide-react"
 import { Restaurant } from "@prisma/client"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
+import { CartLinkButton } from "@/components/cart-link-button"
 
 interface RestaurantHeaderProps {
     restaurant: Pick<Restaurant, 'name' | 'coverImageUrl'>
@@ -12,18 +13,31 @@ interface RestaurantHeaderProps {
 
 const RestaurantHeader = ({restaurant}: RestaurantHeaderProps) => {
     const router = useRouter()
+    const { slug } = useParams<{slug: string}>()
     const handleBackClick = () => router.back()
 
     return (
-        <div className="relative h-[250px] w-full">
-            <Button variant="secondary" size="icon" className="absolute top-4 left-4 rounded-full z-50" asChild onClick={handleBackClick}>
+        <div className="relative h-[230px] w-full overflow-hidden bg-muted sm:h-[320px] lg:h-[380px]">
+            <Button
+                variant="secondary"
+                size="icon"
+                className="absolute left-4 top-4 z-50 rounded-full shadow-sm sm:left-6 sm:top-6"
+                onClick={handleBackClick}
+            >
                 <ChevronLeftIcon />
             </Button>
-            <Button variant="secondary" size="icon" className="absolute top-4 right-4 rounded-full z-50" asChild>
-                <ScrollTextIcon />
-            </Button>
-            <Image src={restaurant.coverImageUrl} alt={restaurant.name} fill className="object-cover" />
-
+            <CartLinkButton
+                slug={slug}
+                className="absolute right-4 top-4 z-50 rounded-full shadow-sm sm:right-6 sm:top-6"
+            />
+            <Image
+                src={restaurant.coverImageUrl}
+                alt={restaurant.name}
+                fill
+                priority
+                className="object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 to-transparent" />
         </div>
     )
 }

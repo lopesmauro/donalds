@@ -1,11 +1,38 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const { PrismaClient } = require("@prisma/client");
+const nodeCrypto = require("crypto");
 
 const prismaClient = new PrismaClient();
 
+const hashPassword = (password: string) => {
+  const salt = nodeCrypto.randomBytes(16).toString("hex");
+  const hash = nodeCrypto.scryptSync(password, salt, 64).toString("hex");
+
+  return `scrypt:${salt}:${hash}`;
+};
+
 const main = async () => {
   await prismaClient.$transaction(async (tx: any) => {
+    await tx.user.upsert({
+      where: {
+        email: process.env.ADMIN_EMAIL ?? "admin@donalds.local",
+      },
+      update: {
+        name: "Admin",
+        passwordHash: hashPassword(process.env.ADMIN_PASSWORD ?? "admin123"),
+        role: "ADMIN",
+        restaurantId: null,
+      },
+      create: {
+        name: "Admin",
+        email: process.env.ADMIN_EMAIL ?? "admin@donalds.local",
+        passwordHash: hashPassword(process.env.ADMIN_PASSWORD ?? "admin123"),
+        role: "ADMIN",
+        restaurantId: null,
+      },
+    });
+
     await tx.restaurant.deleteMany();
     const restaurant = await tx.restaurant.create({
       data: {
@@ -16,6 +43,25 @@ const main = async () => {
           "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQvcNP9rHlEJu1vCY5kLqzjf29HKaeN78Z6pRy",
         coverImageUrl:
           "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQac8bHYlkBUjlHSKiuseLm2hIFzVY0OtxEPnw",
+      },
+    });
+
+    await tx.user.upsert({
+      where: {
+        email: process.env.OWNER_EMAIL ?? "owner@donalds.local",
+      },
+      update: {
+        name: "Owner",
+        passwordHash: hashPassword(process.env.OWNER_PASSWORD ?? "owner123"),
+        role: "OWNER",
+        restaurantId: restaurant.id,
+      },
+      create: {
+        name: "Owner",
+        email: process.env.OWNER_EMAIL ?? "owner@donalds.local",
+        passwordHash: hashPassword(process.env.OWNER_PASSWORD ?? "owner123"),
+        role: "OWNER",
+        restaurantId: restaurant.id,
       },
     });
     const combosCategory = await tx.menuCategory.create({

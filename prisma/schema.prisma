@@ -23,8 +23,21 @@ model Restaurant {
   menuCategories MenuCategory[]
   products       Product[]
   orders         Order[]
+  users          User[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+}
+
+model User {
+  id           String      @id @default(uuid())
+  name         String
+  email        String      @unique
+  passwordHash String
+  role         UserRole    @default(ADMIN)
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  restaurantId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model MenuCategory {
@@ -58,6 +71,12 @@ model Order {
   total             Float
   status            OrderStatus
   consumptionMethod ConsumptionMethod
+  paymentMethod     PaymentMethod     @default(PIX)
+  customerName      String            @default("")
+  customerPhone     String            @default("")
+  customerDocument  String?
+  changeFor         Float?
+  notes             String?
   orderProducts     OrderProduct[]
   restaurant        Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId      String
@@ -86,4 +105,16 @@ enum OrderStatus {
 enum ConsumptionMethod {
   TAKEAWAY
   DINE_IN
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  CASH
+}
+
+enum UserRole {
+  ADMIN
+  OWNER
 }
